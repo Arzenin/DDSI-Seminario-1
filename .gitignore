@@ -1,2 +1,6 @@
+#Folders
 /build/
 /nbproject/private/
+
+#Drivers
+ojdbc11.jar
