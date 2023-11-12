@@ -116,6 +116,7 @@ public class DDSI_S1 {
                 sentencia.executeUpdate(sql_sentencia);
                 
                 connection.commit();
+            System.out.println("Se han generado las tablas correctamente");
         }
         catch (SQLException e) {
             if (connection != null && savepoint != null) {
@@ -138,6 +139,7 @@ public class DDSI_S1 {
                 sentencia.executeUpdate(sql_sentencia);
             }
                 connection.commit();
+             System.out.println("Se han insertado correctamente las tuplas pot defecto");
         }
         catch (SQLException e) {
             if (connection != null && savepoint != null) {
