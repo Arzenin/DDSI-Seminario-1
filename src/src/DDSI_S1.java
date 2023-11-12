@@ -5,8 +5,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.util.Scanner;
+import javax.swing.table.DefaultTableModel;
 
 public class DDSI_S1 {
     
@@ -62,8 +64,6 @@ public class DDSI_S1 {
         this.crearTablas();
             
         this.crearTuplasStock();
-            
-        connection.commit();
     }
          
  
@@ -101,6 +101,8 @@ public class DDSI_S1 {
                 +"FOREIGN KEY(Cproducto) REFERENCES Stock(Cproducto),"
                 +"FOREIGN KEY(Cpedido) REFERENCES Pedido(Cpedido))";
             sentencia.executeUpdate(sql_sentencia);
+            
+            connection.commit();
     }
     
     private void crearTuplasStock() throws SQLException{
@@ -125,30 +127,105 @@ public class DDSI_S1 {
             sentencia.executeUpdate(sql_sentencia);
             sql_sentencia="INSERT INTO Stock(Cproducto,Cantidad) VALUES(10,50)";
             sentencia.executeUpdate(sql_sentencia);
+            
+            connection.commit();
     }
     
-    public void hacerPedido() throws SQLException {
-        System.out.println("VA USTED A HACER UN PEDIDO: ");
+    public void hacerPedido() {
+        try{
+            System.out.println("VA USTED A HACER UN PEDIDO: ");
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Por favor introduzca el código de pedido: ");
+            String cPedido=scanner.next();
+            System.out.println("Por favor introduzca el código de cliente: ");
+            String cCliente=scanner.next();
+            System.out.println("Por favor introduzca la fecha del pedido: ");
+            String fechaPedido=scanner.next();
+
+            //Integer.parseInt(cPedido);
+            
+            String hacerPedido = "INSERT INTO PEDIDO(CPEDIDO,CCLIENTE,FECHA_PEDIDO) VALUES("
+                    + cPedido + ","
+                    + cCliente + ",TO_DATE('"
+                    + fechaPedido + "','dd/mm/yy'))";
+            System.out.println(hacerPedido);
+            
+            sentencia.executeUpdate(hacerPedido);
+
+            connection.commit();
+        }
+        catch(Exception e){
+            System.out.println("Error en el pedido dentro.");     
+        }
+    }
+    
+    public void consultaTablas() throws SQLException {
+        System.out.println("VA USTED A HACER UNA CONSULTA: ");
         
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Por favor introduzca el código de pedido: ");
-        String cPedido=scanner.next();
-        System.out.println("Por favor introduzca el código de cliente: ");
-        String cCliente=scanner.next();
-        System.out.println("Por favor introduzca la fecha del pedido: ");
-        String fechaPedido=scanner.next();
+        System.out.println("Por favor introduzca el nombre de la tabla: ");
+        String name=scanner.next();
         
-        String hacerPedido = "INSERT INTO PEDIDO VALUES('"
-                + cPedido + "', '"
-                + cCliente + "', '"
-                + fechaPedido + "')";
-        sentencia.executeUpdate(hacerPedido);
+        String frase="";
+        switch(name){
+            case "PEDIDO":
+                frase = "CPEDIDO    CCLIENTE    FECHA_PEDIDO";
+            break;
+            
+            case "STOCK":
+                frase = "CPRODUCTO    CANTIDAD";
+            break;
+            
+            case "DETALLE_PEDIDO":
+                frase = "CPEDIDO    CPRODUCTO    CANTIDAD";
+            break;
+        }
+        System.out.println(frase);
+             
+        String hacerConsulta = "SELECT * FROM " + name;
         
+        try (PreparedStatement preparedStatement = connection.prepareStatement(hacerConsulta)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                // Procesa los resultados del conjunto de ResultSet
+                while (resultSet.next()) {
+                    // Accede a los valores de las columnas
+                    int columna1 = -1;
+                    int columna2 = -1;
+                    String columna3 = "";
+                    switch(name){
+                        case "PEDIDO":
+                            columna1 = resultSet.getInt("CPEDIDO");
+                            columna2 = resultSet.getInt("CCLIENTE");
+                            columna3 = resultSet.getString("FECHA_PEDIDO");
+                        break;
+
+                        case "STOCK":
+                            columna1 = resultSet.getInt("CPRODUCTO");
+                            columna2 = resultSet.getInt("CANTIDAD");
+                        break;
+
+                        case "DETALLE_PEDIDO":
+                            columna1 = resultSet.getInt("CPEDIDO");
+                            columna2 = resultSet.getInt("CPRODUCTO");
+                            columna3 = resultSet.getString("CANTIDAD");
+                        break;
+                    }
+                    
+                    // Realiza las operaciones necesarias con los datos
+                    String fila = "    " + columna1+"       "+columna2+"            "+columna3;
+                    System.out.println(fila);
+                    
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     
     public static void main(String[] args) {
-        DDSI_S1 bd = new DDSI_S1("x7147456","x7147456");
+        DDSI_S1 bd = new DDSI_S1("x6520115","x6520115");
         bd.Iniciar_Sesion();
         try {
             bd.Crear_Borrar_Insertar();
@@ -159,9 +236,16 @@ public class DDSI_S1 {
         }
         try {
             bd.hacerPedido();
+            bd.hacerPedido();
             System.out.println("Pedido hecho");
         }catch(Exception e){
             System.out.println("Error en el pedido.");     
+        }
+        try {
+            bd.consultaTablas();
+            System.out.println("Consulta realizada");
+        }catch(Exception e){
+            System.out.println("Error en la consulta.");     
         }
         bd.Cerrar_Sesion();
     }
