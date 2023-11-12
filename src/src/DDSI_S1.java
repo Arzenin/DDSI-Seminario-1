@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.util.Scanner;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Savepoint;
 
 public class DDSI_S1 {
     
@@ -79,8 +80,12 @@ public class DDSI_S1 {
         }
         catch (SQLException e) {
             if (connection != null && savepoint != null) {
-                connection.rollback(savepoint);
-                System.out.println("Se realizó un rollback por fallo en al eliminar las tablas, puede que una de estas no exista");
+                try{
+                    connection.rollback(savepoint);
+                    System.out.println("Se realizó un rollback por fallo en al eliminar las tablas, puede que una de estas no exista");
+                }catch(Exception e1){
+                    System.out.println("Fallo al realizar rollback");
+                }
             }
         }  
     }
@@ -114,8 +119,12 @@ public class DDSI_S1 {
         }
         catch (SQLException e) {
             if (connection != null && savepoint != null) {
-                connection.rollback(savepoint);
-                System.out.println("Se realizó un rollback por fallo a la hora de crear las tablas");
+                try{
+                    connection.rollback(savepoint);
+                    System.out.println("Se realizó un rollback por fallo a la hora de crear las tablas");
+                }catch(Exception e1){
+                    System.out.println("Fallo al realizar rollback");
+                }
             }
         }  
     }
@@ -132,8 +141,12 @@ public class DDSI_S1 {
         }
         catch (SQLException e) {
             if (connection != null && savepoint != null) {
-                connection.rollback(savepoint);
-                System.out.println("Se realizó un rollback por error a la hora de insertar las tuplas por defecto");
+                try{
+                    connection.rollback(savepoint);
+                    System.out.println("Se realizó un rollback por error a la hora de insertar las tuplas por defecto");
+                }catch(Exception e1){
+                    System.out.println("Fallo al realizar rollback");
+                }
             }
         }   
     }
@@ -144,14 +157,16 @@ public class DDSI_S1 {
             savepoint = connection.setSavepoint();
             boolean existe = false;
             Scanner scanner = new Scanner(System.in);
-            System.out.println("VA USTED A HACER UN PEDIDO: ");
+                        
+            String cProducto="";
+            String cPedido ="";
             
             while (existe == false){                
                 System.out.println("INDIQUE EL CODIGO DEL PRODUCTO");
-                String Cproducto=scanner.next();
-                String consulta = "SELECT * FROM STOCK WHERE CPRODUCTO = "+ Cproducto;
-            
-                resultSet = sentencia.execute(consulta);
+                cProducto=scanner.next();
+                String consulta = "SELECT * FROM STOCK WHERE CPRODUCTO = "+ cProducto;
+           
+                resultSet = sentencia.executeQuery(consulta);
                 if(resultSet.next()){
                     System.out.println("El código de producto existe, se puede continuar con el pedido");
                     existe = true;
@@ -168,16 +183,16 @@ public class DDSI_S1 {
             
             while (existe == false){                
                 System.out.println("Por favor introduzca el código de pedido: ");
-                String cPedido=scanner.next();
+                cPedido=scanner.next();
                 String consulta = "SELECT * FROM DETALLE_PEDIDO WHERE CPRODUCTO = " + cProducto + " AND CPEDIDO = "+ cPedido;
             
-                resultSet = sentencia.execute(consulta);
+                resultSet = sentencia.executeQuery(consulta);
                 if(resultSet.next()){
-                    System.out.println("El código de producto existe, se puede continuar con el pedido");
-                    existe = true;
+                    System.out.println("Ya existe un pedido para ese producto");
                 }
                 else{
-                    System.out.println("Ya existe un pedido para ese producto");
+                    System.out.println("No existe un pedido para ese producto, se puede continuar con el pedido");
+                    existe = true;
                 }
             }
             
@@ -204,15 +219,17 @@ public class DDSI_S1 {
         }
         catch (SQLException e) {
             if (connection != null && savepoint != null) {
-                connection.rollback(savepoint);
-                System.out.println("Se realizó un rollback por error a la hora de realizar un pedido");
+                try{
+                    connection.rollback(savepoint);
+                    System.out.println("Se realizó un rollback por error a la hora de realizar un pedido");
+                }catch(Exception e1){
+                    System.out.println("Fallo al realizar rollback");
+                }
             }
         }   
     }
     
-    public void consultaTablas() throws SQLException {
-        System.out.println("VA USTED A HACER UNA CONSULTA: ");
-        
+    public void consultaTablas() throws SQLException {      
         Scanner scanner = new Scanner(System.in);
         System.out.println("Por favor introduzca el nombre de la tabla: ");
         String name=scanner.next();
@@ -276,9 +293,9 @@ public class DDSI_S1 {
     
     
     public static void main(String[] args) {
-        DDSI_S1 bd = new DDSI_S1("x6520115","x6520115");
+        DDSI_S1 bd = new DDSI_S1("",""); //Usuario y contraseña de la BD
         bd.Iniciar_Sesion();
-        try {
+        /*try {
             bd.Crear_Borrar_Insertar();
             System.out.println("Tablas Creadas");
         }catch(Exception e){
@@ -297,7 +314,48 @@ public class DDSI_S1 {
             System.out.println("Consulta realizada");
         }catch(Exception e){
             System.out.println("Error en la consulta.");     
+        }*/
+        
+        boolean fin=false;
+        System.out.println("Bienvenido al Sistema. Elija una opcion: \n");
+        while(fin == false){
+            System.out.println("\n1 - Borrar las tablas, crear tablas y rellenar valores por defecto(Recomendado ser primera) \n"
+                              +"2 - Crear Pedido \n"
+                              +"3 - Visualizar tablas de la BD \n"
+                              +"4 - Salir del sistema");
+            Scanner scanner = new Scanner(System.in);
+            int opcion=Integer.parseInt(scanner.next());
+            System.out.println();
+            switch(opcion){
+                case 1:
+                    try {
+                        bd.Crear_Borrar_Insertar();
+                        System.out.println("Tablas Creadas");
+                    }
+                    catch(Exception e){ }
+                    break;
+                
+                case 2:
+                    try {
+                        bd.hacerPedido();
+                        System.out.println("Pedido hecho");
+                    }
+                    catch(Exception e){ }
+                    break;
+                case 3:
+                    try {
+                        bd.consultaTablas();
+                        System.out.println("Consulta realizada");
+                    }
+                    catch(Exception e){ }
+                    break;
+                case 4:
+                    fin=true;
+                    break;
+            }
+        
         }
+        
         bd.Cerrar_Sesion();
     }
    
