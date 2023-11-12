@@ -19,6 +19,7 @@ public class DDSI_S1 {
     Connection connection = null;
     Statement sentencia = null;
     ResultSet resultSet = null;
+    Savepoint savepoint = null;
     
     public DDSI_S1(){}
     
@@ -36,8 +37,10 @@ public class DDSI_S1 {
             connection = DriverManager.getConnection(jdbcUrl, username, password);
             sentencia=connection.createStatement();
             connection.setAutoCommit(false);
+            savepoint = connection.setSavepoint();
         } 
         catch (Exception e) {
+            System.out.println("Error al iniciar sesión");
             e.printStackTrace();
         }     
     }
@@ -49,115 +52,162 @@ public class DDSI_S1 {
             System.exit(0);
         }
         catch(Exception e){
+            System.out.println("Error al cerrar sesión");
             System.exit(0);
         }
         
     }
     public void Crear_Borrar_Insertar()throws SQLException{
-        
-        try {
-            this.borrarTablas();
-        } catch (SQLException ex) {
-            System.out.println("Las tablas no existian de antes");
-        }
-            
+        this.borrarTablas();
         this.crearTablas();
-            
         this.crearTuplasStock();
     }
          
  
 
-    private void borrarTablas() throws SQLException {
-        String sql_sentencia = "DROP TABLE DETALLE_PEDIDO";
-            sentencia.execute(sql_sentencia);
-            sql_sentencia ="DROP TABLE PEDIDO";
-            sentencia.execute(sql_sentencia);
-            sql_sentencia = "DROP TABLE STOCK";
-            sentencia.execute(sql_sentencia);
-
-            connection.commit();
+    private void borrarTablas() {
+        try{
+            savepoint = connection.setSavepoint();
+            String sql_sentencia = "DROP TABLE DETALLE_PEDIDO";
+                sentencia.execute(sql_sentencia);
+                sql_sentencia ="DROP TABLE PEDIDO";
+                sentencia.execute(sql_sentencia);
+                sql_sentencia = "DROP TABLE STOCK";
+                sentencia.execute(sql_sentencia);
+    
+                connection.commit();
+        }
+        catch (SQLException e) {
+            if (connection != null && savepoint != null) {
+                connection.rollback(savepoint);
+                System.out.println("Se realizó un rollback por fallo en al eliminar las tablas, puede que una de estas no exista");
+            }
+        }  
     }
     
-    private void crearTablas() throws SQLException {
-        String sql_sentencia =sql_sentencia = "CREATE TABLE Stock("
-                +"Cproducto int,"
-                +"Cantidad int,"
-                +"primary key(Cproducto))";
-            sentencia.executeUpdate(sql_sentencia);
-            
-            sql_sentencia = "CREATE TABLE Pedido("
-                +"Cpedido int,"
-                +"Ccliente int,"
-                +"Fecha_pedido DATE,"
-                +"primary key(Cpedido))";
-            sentencia.executeUpdate(sql_sentencia);
-            
-            sql_sentencia = "CREATE TABLE Detalle_Pedido("
-                +"Cpedido int,"
-                +"Cproducto int,"
-                +"Cantidad int,"
-                +"PRIMARY KEY(Cpedido,Cproducto),"
-                +"FOREIGN KEY(Cproducto) REFERENCES Stock(Cproducto),"
-                +"FOREIGN KEY(Cpedido) REFERENCES Pedido(Cpedido))";
-            sentencia.executeUpdate(sql_sentencia);
-            
-            connection.commit();
+    private void crearTablas(){
+        try{
+            savepoint = connection.setSavepoint();
+            String sql_sentencia =sql_sentencia = "CREATE TABLE Stock("
+                    +"Cproducto int,"
+                    +"Cantidad int,"
+                    +"primary key(Cproducto))";
+                sentencia.executeUpdate(sql_sentencia);
+                
+                sql_sentencia = "CREATE TABLE Pedido("
+                    +"Cpedido int,"
+                    +"Ccliente int,"
+                    +"Fecha_pedido DATE,"
+                    +"primary key(Cpedido))";
+                sentencia.executeUpdate(sql_sentencia);
+                
+                sql_sentencia = "CREATE TABLE Detalle_Pedido("
+                    +"Cpedido int,"
+                    +"Cproducto int,"
+                    +"Cantidad int,"
+                    +"PRIMARY KEY(Cpedido,Cproducto),"
+                    +"FOREIGN KEY(Cproducto) REFERENCES Stock(Cproducto),"
+                    +"FOREIGN KEY(Cpedido) REFERENCES Pedido(Cpedido))";
+                sentencia.executeUpdate(sql_sentencia);
+                
+                connection.commit();
+        }
+        catch (SQLException e) {
+            if (connection != null && savepoint != null) {
+                connection.rollback(savepoint);
+                System.out.println("Se realizó un rollback por fallo a la hora de crear las tablas");
+            }
+        }  
     }
     
-    private void crearTuplasStock() throws SQLException{
-        
-        String sql_sentencia="INSERT INTO Stock(Cproducto,Cantidad) VALUES(1,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia= "INSERT INTO Stock(Cproducto,Cantidad) VALUES(2,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia= "INSERT INTO Stock(Cproducto,Cantidad) VALUES(3,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia="INSERT INTO Stock(Cproducto,Cantidad) VALUES(4,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia= "INSERT INTO Stock(Cproducto,Cantidad) VALUES(5,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia= "INSERT INTO Stock(Cproducto,Cantidad) VALUES(6,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia= "INSERT INTO Stock(Cproducto,Cantidad) VALUES(7,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia= "INSERT INTO Stock(Cproducto,Cantidad) VALUES(8,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia= "INSERT INTO Stock(Cproducto,Cantidad) VALUES(9,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            sql_sentencia="INSERT INTO Stock(Cproducto,Cantidad) VALUES(10,50)";
-            sentencia.executeUpdate(sql_sentencia);
-            
-            connection.commit();
+    private void crearTuplasStock(){
+        try{
+            savepoint = connection.setSavepoint();
+            String sql_sentencia = "";
+            for (int i = 1 ; i < 11; i++){
+                sql_sentencia = "INSERT INTO Stock(Cproducto,Cantidad) VALUES("+i+",50)";
+                sentencia.executeUpdate(sql_sentencia);
+            }
+                connection.commit();
+        }
+        catch (SQLException e) {
+            if (connection != null && savepoint != null) {
+                connection.rollback(savepoint);
+                System.out.println("Se realizó un rollback por error a la hora de insertar las tuplas por defecto");
+            }
+        }   
     }
     
     public void hacerPedido() {
+        
         try{
-            System.out.println("VA USTED A HACER UN PEDIDO: ");
-
+            savepoint = connection.setSavepoint();
+            boolean existe = false;
             Scanner scanner = new Scanner(System.in);
-            System.out.println("Por favor introduzca el código de pedido: ");
-            String cPedido=scanner.next();
+            System.out.println("VA USTED A HACER UN PEDIDO: ");
+            
+            while (existe == false){                
+                System.out.println("INDIQUE EL CODIGO DEL PRODUCTO");
+                String Cproducto=scanner.next();
+                String consulta = "SELECT * FROM STOCK WHERE CPRODUCTO = "+ Cproducto;
+            
+                resultSet = sentencia.execute(consulta);
+                if(resultSet.next()){
+                    System.out.println("El código de producto existe, se puede continuar con el pedido");
+                    existe = true;
+                }
+                else{
+                    System.out.println("El código de producto no existe por favor vuelva a insetar el codigo");
+                }
+            }
+            
             System.out.println("Por favor introduzca el código de cliente: ");
             String cCliente=scanner.next();
-            System.out.println("Por favor introduzca la fecha del pedido: ");
-            String fechaPedido=scanner.next();
 
-            //Integer.parseInt(cPedido);
+            existe = false;
             
+            while (existe == false){                
+                System.out.println("Por favor introduzca el código de pedido: ");
+                String cPedido=scanner.next();
+                String consulta = "SELECT * FROM DETALLE_PEDIDO WHERE CPRODUCTO = " + cProducto + " AND CPEDIDO = "+ cPedido;
+            
+                resultSet = sentencia.execute(consulta);
+                if(resultSet.next()){
+                    System.out.println("El código de producto existe, se puede continuar con el pedido");
+                    existe = true;
+                }
+                else{
+                    System.out.println("Ya existe un pedido para ese producto");
+                }
+            }
+            
+            System.out.println("Por favor introduzca la fecha del pedido en el siguiente formato dd/mm/yy: ");
+            String fechaPedido=scanner.next();
+            System.out.println("Introduzca la cantidad de productos que desea");
+            String cantidad=scanner.next();
+
             String hacerPedido = "INSERT INTO PEDIDO(CPEDIDO,CCLIENTE,FECHA_PEDIDO) VALUES("
                     + cPedido + ","
                     + cCliente + ",TO_DATE('"
                     + fechaPedido + "','dd/mm/yy'))";
-            System.out.println(hacerPedido);
+            
+            sentencia.executeUpdate(hacerPedido);
+
+            hacerPedido = "INSERT INTO DETALLE_PEDIDO(CPEDIDO,CPRODUCTO,CANTIDAD) VALUES("
+                    + cPedido + ","
+                    + cProducto + ","
+                    + cantidad + ")";
             
             sentencia.executeUpdate(hacerPedido);
 
             connection.commit();
         }
-        catch(Exception e){
-            System.out.println("Error en el pedido dentro.");     
-        }
+        catch (SQLException e) {
+            if (connection != null && savepoint != null) {
+                connection.rollback(savepoint);
+                System.out.println("Se realizó un rollback por error a la hora de realizar un pedido");
+            }
+        }   
     }
     
     public void consultaTablas() throws SQLException {
@@ -218,7 +268,8 @@ public class DDSI_S1 {
                     
                 }
             }
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) {
             e.printStackTrace();
         }
     }
