@@ -84,7 +84,7 @@ public class DDSI_S1 {
                     connection.rollback(savepoint);
                     System.out.println("Se realizó un rollback por fallo en al eliminar las tablas, puede que una de estas no exista");
                 }catch(Exception e1){
-                    System.out.println("Fallo al realizar rollback");
+                    System.out.println("Fallo al realizar rollback, alguna de las tablas puede que no exista previamente");
                 }
             }
         }  
