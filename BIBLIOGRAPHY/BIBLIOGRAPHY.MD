@@ -6,12 +6,12 @@
 
 <h3 align="center">2-Tutoriales de implementación de conectividad con el JDBC:</h3>
 
-https://www.codejava.net/java-se/jdbc/connect-to-oracle-database-via-jdbc
+<h5 align="center">https://www.codejava.net/java-se/jdbc/connect-to-oracle-database-via-jdbc</h5>
         
-https://www.geeksforgeeks.org/establishing-jdbc-connection-in-java/
+<h5 align="center">https://www.geeksforgeeks.org/establishing-jdbc-connection-in-java/</h5>
         
-https://www.ibm.com/docs/es/i/7.4?topic=jdbc-tutorial
+<h5 align="center">https://www.ibm.com/docs/es/i/7.4?topic=jdbc-tutorial</h5>
 
 <h3 align="center">4-Enlace de SGBD utilizado</h3>
 
-https://www.oracle.com/es/
+<h5 align="center">https://www.oracle.com/es/</h5>
