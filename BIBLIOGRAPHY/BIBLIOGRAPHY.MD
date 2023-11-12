@@ -2,7 +2,7 @@
 
 <h3 align="center">1-CREACIÓN Y EDICIÓN DEL README.MD:</h3>
 
-https://www.aluracursos.com/blog/como-escribir-un-readme-increible-en-tu-github
+<h5 align="center">https://www.aluracursos.com/blog/como-escribir-un-readme-increible-en-tu-github</h5>
 
 <h3 align="center">2-Tutoriales de implementación de conectividad con el JDBC:</h3>
 
