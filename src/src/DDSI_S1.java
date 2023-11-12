@@ -295,27 +295,7 @@ public class DDSI_S1 {
     public static void main(String[] args) {
         DDSI_S1 bd = new DDSI_S1("",""); //Usuario y contraseña de la BD
         bd.Iniciar_Sesion();
-        /*try {
-            bd.Crear_Borrar_Insertar();
-            System.out.println("Tablas Creadas");
-        }catch(Exception e){
-            System.out.println("Las tablas ya estaban creadas");     
-            //System.exit(0);
-        }
-        try {
-            bd.hacerPedido();
-            bd.hacerPedido();
-            System.out.println("Pedido hecho");
-        }catch(Exception e){
-            System.out.println("Error en el pedido.");     
-        }
-        try {
-            bd.consultaTablas();
-            System.out.println("Consulta realizada");
-        }catch(Exception e){
-            System.out.println("Error en la consulta.");     
-        }*/
-        
+
         boolean fin=false;
         System.out.println("Bienvenido al Sistema. Elija una opcion: \n");
         while(fin == false){
