@@ -7,8 +7,8 @@ import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.util.Scanner;
 import javax.swing.table.DefaultTableModel;
-
-    String username = ""; // Reemplaza con tu nombre de usuario
+    String jdbcUrl   
+String username = ""; // Reemplaza con tu nombre de usuario
     String password = ""; // Reemplaza con tu contraseña
         
     Connection connection = null;
