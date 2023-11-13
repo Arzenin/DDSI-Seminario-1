@@ -1,5 +1,3 @@
-package DDSI_S1;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -91,8 +89,14 @@ public class DDSI_S1 {
     }
     
     private void crearTablas(){
-        try{
+        try{   
             savepoint = connection.setSavepoint();
+        }
+        catch(Exception e){
+            System.out.println("Fallo al realizar el savepoint");
+        }
+        try{
+            
             String sql_sentencia =sql_sentencia = "CREATE TABLE Stock("
                     +"Cproducto int,"
                     +"Cantidad int,"
@@ -131,8 +135,13 @@ public class DDSI_S1 {
     }
     
     private void crearTuplasStock(){
-        try{
+        try{   
             savepoint = connection.setSavepoint();
+        }
+        catch(Exception e){
+            System.out.println("Fallo al realizar el savepoint");
+        }
+        try{
             String sql_sentencia = "";
             for (int i = 1 ; i < 11; i++){
                 sql_sentencia = "INSERT INTO Stock(Cproducto,Cantidad) VALUES("+i+",50)";
@@ -154,9 +163,13 @@ public class DDSI_S1 {
     }
     
     public void hacerPedido() {
-        
-        try{
+        try{   
             savepoint = connection.setSavepoint();
+        }
+        catch(Exception e){
+            System.out.println("Fallo al realizar el savepoint");
+        }
+        try{
             boolean existe = false;
             Scanner scanner = new Scanner(System.in);
                         
@@ -295,7 +308,7 @@ public class DDSI_S1 {
     
     
     public static void main(String[] args) {
-        DDSI_S1 bd = new DDSI_S1("",""); //Usuario y contraseña de la BD
+        DDSI_S1 bd = new DDSI_S1("x8153037","x8153037"); //Usuario y contraseña de la BD
         bd.Iniciar_Sesion();
 
         boolean fin=false;
