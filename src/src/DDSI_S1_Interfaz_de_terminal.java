@@ -7,11 +7,7 @@ import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 import java.util.Scanner;
 import javax.swing.table.DefaultTableModel;
-import java.sql.Savepoint;
 
-public class DDSI_S1 {
-    
-    String jdbcUrl = "jdbc:oracle:thin:@oracle0.ugr.es:1521/practbd.oracle0.ugr.es"; // Reemplaza con la URL de tu base de datos Oracle
     String username = ""; // Reemplaza con tu nombre de usuario
     String password = ""; // Reemplaza con tu contraseña
         
